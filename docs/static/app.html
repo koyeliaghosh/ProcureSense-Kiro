@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcureSense - AI Procurement Co-Pilot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            max-width: 1400px;
+            margin: 0 auto 30px auto;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: fit-content;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .agent-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .negotiation { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .compliance { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .forecast { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        .agent-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .agent-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .compliance-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .compliant { background: #dcfce7; color: #166534; }
+        .revised { background: #fef3c7; color: #92400e; }
+        .flagged { background: #fee2e2; color: #991b1b; }
+
+        .response-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 ProcureSense</h1>
+            <p>AI-Powered Procurement Co-Pilot with Enterprise Policy Compliance</p>
+            
+            <div class="nav-links">
+                <a href="/" class="nav-link active">🏠 Main App</a>
+                <a href="/static/business-case.html" class="nav-link">📊 Business Case</a>
+                <a href="/static/kiro-story.html" class="nav-link">🤖 Kiro Story</a>
+                <a href="/docs" class="nav-link" target="_blank">📚 API Docs</a>
+                <a href="/integration/metrics" class="nav-link" target="_blank">📈 Metrics</a>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>System Status: <strong id="system-status">Checking...</strong></span>
+            </div>
+            <div class="status-item">
+                <span>🔒 Policy Enforcement: <strong>Active</strong></span>
+            </div>
+            <div class="status-item">
+                <span>⚡ Response Time: <strong id="response-time">--</strong></span>
+            </div>
+        </div>
+
+        <div class="agents-grid">
+            <!-- Negotiation Agent -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-icon negotiation">💼</div>
+                    <div class="agent-title">Negotiation Agent</div>
+                </div>
+                <div class="agent-description">
+                    Generate pricing proposals, negotiate discounts, and create contract terms with automatic warranty inclusion for aggressive discounts.
+                </div>
+                
+                <form id="negotiation-form">
+                    <div class="form-group">
+                        <label class="form-label">Vendor Name</label>
+                        <input type="text" class="form-input" name="vendor" placeholder="e.g., TechCorp Solutions" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Discount (%)</label>
+                        <input type="number" class="form-input" name="target_discount_pct" min="0" max="50" step="0.1" placeholder="15.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Select category...</option>
+                            <option value="software">Software</option>
+                            <option value="hardware">Hardware</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="cloud_services">Cloud Services</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Additional Context (Optional)</label>
+                        <textarea class="form-textarea" name="context" placeholder="e.g., Annual renewal, bulk purchase, multi-year contract..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">
+                        <span class="btn-text">🚀 Generate Proposal</span>
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+                
+                <div id="negotiation-response" class="response-section" style="display: none;">
+                    <div class="response-header">
+                        <strong>Negotiation Result</strong>
+                        <span id="negotiation-compliance" class="compliance-badge"></span>
+                    </div>
+                    <div id="negotiation-content" class="response-content"></div>
+                    <div id="negotiation-metrics" class="metrics"></div>
+                </div>
+            </div>
+
+            <!-- Compliance Agent -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-icon compliance">⚖️</div>
+                    <div class="agent-title">Compliance Agent</div>
+                </div>
+                <div class="agent-description">
+                    Analyze contract clauses for policy violations, assess risks, and provide compliant alternatives with automatic clause rewriting.
+                </div>
+                
+                <form id="compliance-form">
+                    <div class="form-group">
+                        <label class="form-label">Contract Clause</label>
+                        <textarea class="form-textarea" name="clause" placeholder="e.g., Provider may terminate at will without cure period..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contract Type</label>
+                        <select class="form-select" name="contract_type">
+                            <option value="">Select type...</option>
+                            <option value="software_license">Software License</option>
+                            <option value="service_agreement">Service Agreement</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Risk Tolerance</label>
+                        <select class="form-select" name="risk_tolerance">
+                            <option value="">Select tolerance...</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">
+                        <span class="btn-text">🔍 Analyze Compliance</span>
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+                
+                <div id="compliance-response" class="response-section" style="display: none;">
+                    <div class="response-header">
+                        <strong>Compliance Analysis</strong>
+                        <span id="compliance-compliance" class="compliance-badge"></span>
+                    </div>
+                    <div id="compliance-content" class="response-content"></div>
+                    <div id="compliance-metrics" class="metrics"></div>
+                </div>
+            </div>
+
+            <!-- Forecast Agent -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-icon forecast">📊</div>
+                    <div class="agent-title">Forecast Agent</div>
+                </div>
+                <div class="agent-description">
+                    Analyze budget forecasts, spending alignment, and provide variance analysis with risk warnings for budget overruns.
+                </div>
+                
+                <form id="forecast-form">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Select category...</option>
+                            <option value="software">Software</option>
+                            <option value="hardware">Hardware</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="cloud_services">Cloud Services</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quarter</label>
+                        <input type="text" class="form-input" name="quarter" placeholder="e.g., Q1 2024" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Planned Spend ($)</label>
+                        <input type="number" class="form-input" name="planned_spend" min="0" step="100" placeholder="50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Budget ($)</label>
+                        <input type="number" class="form-input" name="current_budget" min="0" step="100" placeholder="75000">
+                    </div>
+                    <button type="submit" class="btn">
+                        <span class="btn-text">📈 Generate Forecast</span>
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+                
+                <div id="forecast-response" class="response-section" style="display: none;">
+                    <div class="response-header">
+                        <strong>Budget Forecast</strong>
+                        <span id="forecast-compliance" class="compliance-badge"></span>
+                    </div>
+                    <div id="forecast-content" class="response-content"></div>
+                    <div id="forecast-metrics" class="metrics"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔒 All responses validated by Global Policy Critic (GPCritic) for enterprise compliance</p>
+            <p>⚡ Powered by advanced context engineering with hierarchical token budgeting</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Check system status on load
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                document.getElementById('system-status').textContent = 
+                    data.status === 'healthy' ? 'Online' : 'Issues Detected';
+                
+                // Update response time
+                const start = performance.now();
+                await fetch(`${API_BASE}/health`);
+                const responseTime = Math.round(performance.now() - start);
+                document.getElementById('response-time').textContent = `${responseTime}ms`;
+                
+            } catch (error) {
+                document.getElementById('system-status').textContent = 'Offline';
+                console.error('System status check failed:', error);
+            }
+        }
+
+        // Generic form submission handler
+        async function submitForm(formId, endpoint, responseId, complianceId, contentId, metricsId) {
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convert numeric fields
+            if (data.target_discount_pct) data.target_discount_pct = parseFloat(data.target_discount_pct);
+            if (data.planned_spend) data.planned_spend = parseFloat(data.planned_spend);
+            if (data.current_budget) data.current_budget = parseFloat(data.current_budget);
+            
+            // Show loading
+            const btn = form.querySelector('.btn');
+            const btnText = btn.querySelector('.btn-text');
+            const loading = btn.querySelector('.loading');
+            
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            loading.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show response
+                    document.getElementById(responseId).style.display = 'block';
+                    
+                    // Set compliance badge
+                    const complianceBadge = document.getElementById(complianceId);
+                    complianceBadge.textContent = result.compliance_status;
+                    complianceBadge.className = `compliance-badge ${result.compliance_status}`;
+                    
+                    // Set content
+                    document.getElementById(contentId).textContent = result.agent_response;
+                    
+                    // Set metrics
+                    const metricsDiv = document.getElementById(metricsId);
+                    metricsDiv.innerHTML = `
+                        <div class="metric-item">
+                            <div class="metric-value">${result.confidence_score.toFixed(2)}</div>
+                            <div class="metric-label">Confidence</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${result.processing_time_ms}ms</div>
+                            <div class="metric-label">Process Time</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${result.policy_violations.length}</div>
+                            <div class="metric-label">Violations</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">${result.context_usage.total_tokens}</div>
+                            <div class="metric-label">Tokens Used</div>
+                        </div>
+                    `;
+                    
+                } else {
+                    // Show error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.textContent = `Error: ${result.message || 'Request failed'}`;
+                    form.appendChild(errorDiv);
+                    
+                    setTimeout(() => errorDiv.remove(), 5000);
+                }
+                
+            } catch (error) {
+                // Show network error
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = `Network Error: ${error.message}`;
+                form.appendChild(errorDiv);
+                
+                setTimeout(() => errorDiv.remove(), 5000);
+                
+            } finally {
+                // Hide loading
+                btn.disabled = false;
+                btnText.style.display = 'inline';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Form event listeners
+        document.getElementById('negotiation-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm('negotiation-form', '/agent/negotiation', 'negotiation-response', 
+                      'negotiation-compliance', 'negotiation-content', 'negotiation-metrics');
+        });
+
+        document.getElementById('compliance-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm('compliance-form', '/agent/compliance', 'compliance-response',
+                      'compliance-compliance', 'compliance-content', 'compliance-metrics');
+        });
+
+        document.getElementById('forecast-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm('forecast-form', '/agent/forecast', 'forecast-response',
+                      'forecast-compliance', 'forecast-content', 'forecast-metrics');
+        });
+
+        // Initialize
+        checkSystemStatus();
+        
+        // Refresh status every 30 seconds
+        setInterval(checkSystemStatus, 30000);
+    </script>
+</body>
+</html>

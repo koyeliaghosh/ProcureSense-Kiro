@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcureSense - AI Procurement Co-Pilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+        }
+        
+        .agent-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .agent-header {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .negotiation-header { background: linear-gradient(135deg, #10b981, #059669); }
+        .compliance-header { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .forecast-header { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .response-container {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .compliance-badge {
+            font-size: 0.9em;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .compliance-compliant { background: #dcfce7; color: #166534; }
+        .compliance-revised { background: #fef3c7; color: #92400e; }
+        .compliance-flagged { background: #fee2e2; color: #991b1b; }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .metrics-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .metric-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head><body>
+ 
+   <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    <i class="fas fa-robot me-3"></i>ProcureSense
+                </h1>
+                <p class="lead text-secondary">AI-Powered Procurement Co-Pilot with Enterprise Policy Compliance</p>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="totalRequests">0</div>
+                            <div class="metric-label">Total Requests</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="complianceRate">100%</div>
+                            <div class="metric-label">Compliance Rate</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="avgResponseTime">0ms</div>
+                            <div class="metric-label">Avg Response Time</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="systemStatus">
+                                <i class="fas fa-circle text-success"></i>
+                            </div>
+                            <div class="metric-label">System Status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Cards -->
+            <div class="row">
+                <!-- Negotiation Agent -->
+                <div class="col-lg-4">
+                    <div class="card agent-card">
+                        <div class="agent-header negotiation-header">
+                            <h4><i class="fas fa-handshake me-2"></i>Negotiation Agent</h4>
+                            <p class="mb-0">Generate pricing proposals and contract terms</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="negotiationForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Vendor Name</label>
+                                    <input type="text" class="form-control" id="vendor" placeholder="e.g., TechCorp Solutions" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Target Discount (%)</label>
+                                    <input type="number" class="form-control" id="discount" min="0" max="50" step="0.1" placeholder="15.0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="category" required>
+                                        <option value="">Select category...</option>
+                                        <option value="software">Software</option>
+                                        <option value="hardware">Hardware</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="cloud_services">Cloud Services</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Context (Optional)</label>
+                                    <textarea class="form-control" id="context" rows="2" placeholder="e.g., Annual renewal, bulk purchase..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>Generate Proposal
+                                </button>
+                            </form>
+                            
+                            <div class="loading mt-3" id="negotiationLoading">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2">Analyzing negotiation strategy...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="response-container" id="negotiationResponse" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6><i class="fas fa-file-contract me-2"></i>Negotiation Result</h6>
+                                    <span class="compliance-badge" id="negotiationCompliance"></span>
+                                </div>
+                                <div id="negotiationContent"></div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>Processing Time: <span id="negotiationTime"></span>ms
+                                        | Confidence: <span id="negotiationConfidence"></span>%
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+               <!-- Compliance Agent -->
+                <div class="col-lg-4">
+                    <div class="card agent-card">
+                        <div class="agent-header compliance-header">
+                            <h4><i class="fas fa-shield-alt me-2"></i>Compliance Agent</h4>
+                            <p class="mb-0">Analyze contract clauses for policy violations</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="complianceForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Contract Clause</label>
+                                    <textarea class="form-control" id="clause" rows="4" placeholder="Enter contract clause to analyze..." required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contract Type</label>
+                                    <select class="form-select" id="contractType">
+                                        <option value="">Select type...</option>
+                                        <option value="software_license">Software License</option>
+                                        <option value="service_agreement">Service Agreement</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="maintenance">Maintenance</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Risk Tolerance</label>
+                                    <select class="form-select" id="riskTolerance">
+                                        <option value="">Select tolerance...</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Analyze Compliance
+                                </button>
+                            </form>
+                            
+                            <div class="loading mt-3" id="complianceLoading">
+                                <div class="text-center">
+                                    <div class="spinner-border text-warning" role="status"></div>
+                                    <p class="mt-2">Analyzing contract compliance...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="response-container" id="complianceResponse" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6><i class="fas fa-clipboard-check me-2"></i>Compliance Analysis</h6>
+                                    <span class="compliance-badge" id="complianceCompliance"></span>
+                                </div>
+                                <div id="complianceContent"></div>
+                                <div id="complianceViolations" class="mt-3"></div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>Processing Time: <span id="complianceTime"></span>ms
+                                        | Confidence: <span id="complianceConfidence"></span>%
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Agent -->
+                <div class="col-lg-4">
+                    <div class="card agent-card">
+                        <div class="agent-header forecast-header">
+                            <h4><i class="fas fa-chart-line me-2"></i>Forecast Agent</h4>
+                            <p class="mb-0">Budget analysis and spending forecasts</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="forecastForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="forecastCategory" required>
+                                        <option value="">Select category...</option>
+                                        <option value="software">Software</option>
+                                        <option value="hardware">Hardware</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="cloud_services">Cloud Services</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Quarter</label>
+                                    <select class="form-select" id="quarter" required>
+                                        <option value="">Select quarter...</option>
+                                        <option value="Q1 2024">Q1 2024</option>
+                                        <option value="Q2 2024">Q2 2024</option>
+                                        <option value="Q3 2024">Q3 2024</option>
+                                        <option value="Q4 2024">Q4 2024</option>
+                                        <option value="Q1 2025">Q1 2025</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Planned Spend ($)</label>
+                                    <input type="number" class="form-control" id="plannedSpend" min="0" step="1000" placeholder="50000" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Current Budget ($)</label>
+                                    <input type="number" class="form-control" id="currentBudget" min="0" step="1000" placeholder="75000">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-calculator me-2"></i>Generate Forecast
+                                </button>
+                            </form>
+                            
+                            <div class="loading mt-3" id="forecastLoading">
+                                <div class="text-center">
+                                    <div class="spinner-border text-info" role="status"></div>
+                                    <p class="mt-2">Analyzing budget forecast...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="response-container" id="forecastResponse" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6><i class="fas fa-chart-bar me-2"></i>Budget Forecast</h6>
+                                    <span class="compliance-badge" id="forecastCompliance"></span>
+                                </div>
+                                <div id="forecastContent"></div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>Processing Time: <span id="forecastTime"></span>ms
+                                        | Confidence: <span id="forecastConfidence"></span>%
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
