@@ -265,12 +265,30 @@ ngrok http 8001
 ## 📁 **Project Structure**
 
 ```
-procure-sense/
-├── 🤖 src/
+ProcureSense-Kiro/
+├── 🤖 .kiro/                          # Kiro IDE integration (COMPLETE)
+│   ├── specs/procure-sense/           # Feature specifications
+│   │   ├── requirements.md            # EARS-format user stories
+│   │   ├── design.md                  # System architecture
+│   │   └── tasks.md                   # Implementation breakdown
+│   ├── hooks/                         # Agent automation hooks
+│   │   ├── contract-analysis.yml      # Auto-analyze contracts
+│   │   ├── budget-forecast.yml        # Budget monitoring
+│   │   ├── vendor-negotiation.yml     # Vendor proposal analysis
+│   │   ├── policy-compliance.yml      # Policy update automation
+│   │   └── full-procurement-analysis.yml # Multi-agent workflow
+│   ├── steering/                      # AI agent guidance
+│   │   ├── procurement-standards.md   # Core procurement guidelines
+│   │   ├── compliance-rules.md        # Compliance framework
+│   │   ├── market-intelligence.md     # Market data & benchmarks
+│   │   └── agent-coordination.md      # Multi-agent coordination
+│   └── settings/
+│       └── mcp.json                   # Model Context Protocol config
+├── 🏗️ src/                           # Source code
 │   ├── agents/          # AI agents (negotiation, compliance, forecast)
 │   ├── api/             # FastAPI application and routes  
 │   ├── config/          # Configuration management
-│   ├── context/         # Context management & token budgeting
+│   ├── context/         # Advanced context management system
 │   ├── critic/          # Global Policy Critic (GPCritic)
 │   ├── llm/             # LLM client implementations
 │   ├── models/          # Data models and types
@@ -306,6 +324,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🙏 **Acknowledgments**
 
 - **Built with [Kiro](https://kiro.ai/)** - AI-powered development environment
+  - ✅ **Complete Kiro Integration**: Specs, Hooks, Steering, and Settings
+  - ✅ **Agent Hooks**: Automated procurement workflow triggers
+  - ✅ **Steering Context**: AI agent guidance and best practices
+  - ✅ **MCP Integration**: External data source connectivity
 - **Powered by Meta's Llama 3.1** via [Ollama](https://ollama.ai/)
 - **FastAPI** for high-performance API framework
 - **Enterprise-grade architecture** with production-ready patterns
