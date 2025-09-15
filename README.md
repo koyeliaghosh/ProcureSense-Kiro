@@ -51,6 +51,13 @@ ProcureSense revolutionizes procurement processes through specialized AI agents 
 - **Comprehensive Testing**: Unit, integration, and system tests with 90%+ coverage
 - **Docker Deployment**: Container-ready with production configurations
 
+### 🔗 **Kiro Agent Hooks Integration**
+- **Contract Analysis Automation**: Auto-trigger compliance agent when procurement contracts are saved or updated
+- **Budget Monitoring**: Automatically run forecast agent when budget files are modified to detect variances
+- **Policy Compliance Checks**: Execute GP Critic analysis when procurement policies are updated
+- **Vendor Evaluation Triggers**: Launch negotiation agent analysis when new vendor proposals are received
+- **Procurement Workflow Automation**: Chain multiple agents (negotiation → compliance → forecast) on RFP submissions
+
 ## 🚀 **Quick Start**
 
 ### **Prerequisites**
@@ -163,6 +170,58 @@ response = requests.post("http://localhost:8001/agent/compliance", json={
 result = response.json()
 print(f"Violations: {len(result['policy_violations'])}")
 print(f"Analysis: {result['agent_response']}")
+```
+
+## 🔗 **Agent Hooks for Procurement Automation**
+
+ProcureSense integrates with Kiro's Agent Hooks system to automate procurement workflows:
+
+### **Contract Processing Hooks**
+```yaml
+# .kiro/hooks/contract-analysis.yml
+name: "Auto Contract Analysis"
+trigger: "file_save"
+pattern: "contracts/*.pdf"
+agent: "compliance"
+description: "Automatically analyze contracts for policy compliance when saved"
+```
+
+### **Budget Monitoring Hooks**
+```yaml
+# .kiro/hooks/budget-forecast.yml  
+name: "Budget Variance Check"
+trigger: "file_update"
+pattern: "budgets/*.xlsx"
+agent: "forecast"
+description: "Run forecast analysis when budget files are updated"
+```
+
+### **Vendor Proposal Automation**
+```yaml
+# .kiro/hooks/vendor-negotiation.yml
+name: "Vendor Proposal Analysis"
+trigger: "manual"
+agent: "negotiation"
+description: "Analyze vendor proposals and generate counter-offers"
+```
+
+### **Policy Update Workflows**
+```yaml
+# .kiro/hooks/policy-compliance.yml
+name: "Policy Compliance Update"
+trigger: "file_save"
+pattern: "policies/*.md"
+agent: "gp_critic"
+description: "Update compliance rules when procurement policies change"
+```
+
+### **Multi-Agent Procurement Pipeline**
+```yaml
+# .kiro/hooks/full-procurement-analysis.yml
+name: "Complete Procurement Analysis"
+trigger: "manual"
+agents: ["negotiation", "compliance", "forecast", "gp_critic"]
+description: "Run full multi-agent analysis on procurement requests"
 ```
 
 ## 🧪 **Testing**
