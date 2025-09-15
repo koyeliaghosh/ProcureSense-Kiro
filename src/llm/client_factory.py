@@ -10,6 +10,7 @@ from src.models.llm_types import LLMProvider, LLMConfig, ValidationError
 from .base_client import BaseLLMClient
 from .ollama_client import OllamaClient
 from .openai_client import OpenAIClient
+from .mock_client import MockLLMClient
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,12 @@ class LLMClientFactory:
         
         config = LLMClientFactory._build_config(settings, provider)
         
+        # Use mock client for cloud deployment if Ollama host is not accessible
         if provider == LLMProvider.OLLAMA:
+            # Check if we're in a cloud environment (no local Ollama)
+            if settings.ollama_host == "localhost:11434" and not settings.openai_api_key:
+                logger.info("Using mock LLM client for cloud deployment demo")
+                return MockLLMClient(config)
             return OllamaClient(config)
         elif provider in [LLMProvider.OPENAI, LLMProvider.ANTHROPIC]:
             return OpenAIClient(config)

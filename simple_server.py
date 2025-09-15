@@ -19,11 +19,14 @@ def main():
     os.environ.setdefault("OLLAMA_HOST", "localhost:11434")
     os.environ.setdefault("OLLAMA_MODEL", "llama3.1:8b")
     
+    # Get port from environment (Render sets PORT)
+    port = int(os.environ.get("PORT", 8001))
+    
     print("🚀 Starting ProcureSense Server...")
-    print("📍 Server will be available at: http://localhost:8001")
-    print("📚 API Documentation: http://localhost:8001/docs")
-    print("💼 Business Case: http://localhost:8001/static/business-case.html")
-    print("📖 Kiro Story: http://localhost:8001/static/kiro-story.html")
+    print(f"📍 Server will be available at: http://0.0.0.0:{port}")
+    print(f"📚 API Documentation: http://0.0.0.0:{port}/docs")
+    print(f"💼 Business Case: http://0.0.0.0:{port}/static/business-case.html")
+    print(f"📖 Kiro Story: http://0.0.0.0:{port}/static/kiro-story.html")
     print()
     print("Press Ctrl+C to stop the server")
     print("=" * 50)
@@ -38,8 +41,8 @@ def main():
         # Run server with simple config
         uvicorn.run(
             app,
-            host="0.0.0.0",  # Allow external connections for ngrok
-            port=8001,  # Changed to 8001 to avoid conflicts
+            host="0.0.0.0",  # Allow external connections
+            port=port,  # Use environment PORT or default
             reload=False,
             log_level="warning"  # Reduce log noise
         )
