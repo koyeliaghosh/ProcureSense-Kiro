@@ -1,0 +1,41 @@
+{
+  "name": "ProcureSense",
+  "description": "AI-Powered Procurement Co-Pilot with Enterprise Policy Compliance",
+  "repository": "https://github.com/your-username/procuresense",
+  "logo": "https://your-domain.com/logo.png",
+  "keywords": ["ai", "procurement", "fastapi", "python"],
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "LLM_PROVIDER": {
+      "description": "LLM provider (ollama, openai, anthropic)",
+      "value": "openai"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for LLM integration",
+      "required": false
+    },
+    "SERVER_HOST": {
+      "description": "Server host",
+      "value": "0.0.0.0"
+    },
+    "SERVER_PORT": {
+      "description": "Server port",
+      "value": "8000"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [],
+  "scripts": {
+    "postdeploy": "echo 'ProcureSense deployed successfully!'"
+  }
+}
