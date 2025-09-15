@@ -1,0 +1,25 @@
+---
+name: "Policy Compliance Update"
+description: "Update compliance rules when procurement policies change"
+trigger: "file_save"
+pattern: "policies/*.md"
+agent: "gp_critic"
+enabled: true
+settings:
+  auto_approve: true
+  timeout: 30
+  priority: "critical"
+context:
+  - "Reload enterprise policies"
+  - "Update compliance validation rules"
+  - "Notify all agents of policy changes"
+actions:
+  - type: "agent_execution"
+    agent: "gp_critic"
+    parameters:
+      action: "reload_policies"
+      validate_existing_contracts: true
+  - type: "system_notification"
+    message: "Enterprise policies updated - all agents notified"
+  - type: "audit_log"
+    event: "policy_update"

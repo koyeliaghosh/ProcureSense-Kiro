@@ -1,0 +1,24 @@
+---
+name: "Budget Variance Check"
+description: "Run forecast analysis when budget files are updated"
+trigger: "file_update"
+pattern: "budgets/*.xlsx"
+agent: "forecast"
+enabled: true
+settings:
+  auto_approve: true
+  timeout: 45
+  priority: "medium"
+context:
+  - "Analyze budget variance against forecasts"
+  - "Identify spending anomalies"
+  - "Generate variance report"
+actions:
+  - type: "agent_execution"
+    agent: "forecast"
+    parameters:
+      analysis_type: "variance_analysis"
+      include_predictions: true
+  - type: "alert"
+    condition: "variance > 10%"
+    message: "Budget variance exceeds threshold"

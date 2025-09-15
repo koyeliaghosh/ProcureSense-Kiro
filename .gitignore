@@ -85,7 +85,6 @@ ngrok.exe
 ngrok
 
 # Local development
-.kiro/
 debug_*
 test_*
 simple_test.py

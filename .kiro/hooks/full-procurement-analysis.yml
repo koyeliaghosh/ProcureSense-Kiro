@@ -1,0 +1,44 @@
+---
+name: "Complete Procurement Analysis"
+description: "Run full multi-agent analysis on procurement requests"
+trigger: "manual"
+agents: ["negotiation", "compliance", "forecast", "gp_critic"]
+enabled: true
+settings:
+  auto_approve: false
+  timeout: 120
+  priority: "high"
+context:
+  - "Execute complete procurement workflow"
+  - "Coordinate all AI agents"
+  - "Generate comprehensive analysis report"
+workflow:
+  - step: 1
+    agent: "negotiation"
+    parameters:
+      analysis_type: "initial_assessment"
+      generate_strategy: true
+  - step: 2
+    agent: "compliance"
+    parameters:
+      validate_against_policies: true
+      check_legal_requirements: true
+    depends_on: [1]
+  - step: 3
+    agent: "forecast"
+    parameters:
+      budget_impact_analysis: true
+      market_timing_analysis: true
+    depends_on: [1]
+  - step: 4
+    agent: "gp_critic"
+    parameters:
+      review_all_outputs: true
+      generate_final_recommendation: true
+    depends_on: [2, 3]
+actions:
+  - type: "report_generation"
+    template: "comprehensive_procurement_analysis"
+    include_all_agent_outputs: true
+  - type: "notification"
+    message: "Complete procurement analysis finished"

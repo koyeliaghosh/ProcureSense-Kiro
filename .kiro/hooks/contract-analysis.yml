@@ -1,0 +1,23 @@
+---
+name: "Auto Contract Analysis"
+description: "Automatically analyze contracts for policy compliance when saved"
+trigger: "file_save"
+pattern: "contracts/*.pdf"
+agent: "compliance"
+enabled: true
+settings:
+  auto_approve: false
+  timeout: 30
+  priority: "high"
+context:
+  - "Always check for prohibited clauses"
+  - "Validate required clauses are present"
+  - "Generate compliance report"
+actions:
+  - type: "agent_execution"
+    agent: "compliance"
+    parameters:
+      analysis_type: "full_compliance_check"
+      generate_report: true
+  - type: "notification"
+    message: "Contract compliance analysis completed"

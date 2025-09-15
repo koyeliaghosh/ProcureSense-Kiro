@@ -1,0 +1,60 @@
+{
+  "mcpServers": {
+    "procurement-data": {
+      "command": "uvx",
+      "args": ["procurement-data-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "INFO",
+        "PROCUREMENT_DB_URL": "sqlite:///procurement.db"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "get_vendor_data",
+        "get_contract_history",
+        "get_budget_info"
+      ]
+    },
+    "market-intelligence": {
+      "command": "uvx", 
+      "args": ["market-intel-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "INFO",
+        "MARKET_DATA_API_KEY": "${MARKET_DATA_API_KEY}"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "get_market_prices",
+        "get_vendor_ratings",
+        "get_industry_benchmarks"
+      ]
+    },
+    "compliance-checker": {
+      "command": "uvx",
+      "args": ["compliance-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "COMPLIANCE_DB_URL": "postgresql://compliance:${DB_PASSWORD}@localhost/compliance"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "validate_contract",
+        "check_policy_compliance",
+        "get_regulatory_requirements"
+      ]
+    },
+    "financial-analysis": {
+      "command": "uvx",
+      "args": ["financial-analysis-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "INFO",
+        "FINANCIAL_API_ENDPOINT": "https://api.financial-data.com/v1"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "calculate_roi",
+        "analyze_budget_impact",
+        "forecast_spending"
+      ]
+    }
+  }
+}

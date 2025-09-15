@@ -1,0 +1,24 @@
+---
+name: "Vendor Proposal Analysis"
+description: "Analyze vendor proposals and generate counter-offers"
+trigger: "manual"
+agent: "negotiation"
+enabled: true
+settings:
+  auto_approve: false
+  timeout: 60
+  priority: "high"
+context:
+  - "Analyze vendor pricing and terms"
+  - "Generate negotiation strategy"
+  - "Identify cost optimization opportunities"
+actions:
+  - type: "agent_execution"
+    agent: "negotiation"
+    parameters:
+      analysis_type: "proposal_analysis"
+      generate_counter_offer: true
+      include_market_comparison: true
+  - type: "document_generation"
+    template: "negotiation_summary"
+    output_path: "negotiations/{{vendor_name}}_analysis.md"
