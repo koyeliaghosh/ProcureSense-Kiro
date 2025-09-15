@@ -1,8 +1,16 @@
 # 🎯 Judge Access Guide - ProcureSense AI Demo
 
-## 🌐 **Live Demo URLs (FREE - No Server Costs)**
+## 🚀 **Interactive Demo URLs (RECOMMENDED FOR JUDGES)**
 
-### **Option 1: GitHub Pages (Recommended)**
+### **Option 1: Local Interactive Demo (BEST EXPERIENCE)**
+**Start:** Double-click `START_DEMO.bat` (Windows) or `bash START_DEMO.sh` (Mac/Linux)  
+**URL:** `http://localhost:8080`
+- ✅ **Fully Interactive** - Real AI agent processing
+- ✅ **Zero Dependencies** - Pure Python, no setup
+- ✅ **30-second start** - One command and ready
+- ✅ **All 4 AI Agents** - Complete system demonstration
+
+### **Option 2: GitHub Pages (Static Fallback)**
 **URL:** `https://koyeliaghosh.github.io/ProcureSense-Kiro/`
 - ✅ **FREE forever**
 - ✅ **Always available** 
@@ -70,11 +78,11 @@ ngrok http 8001
 
 ## 🎯 **Recommended for Judges**
 
-### **Best Option: GitHub Pages**
-- **URL:** `https://koyeliaghosh.github.io/ProcureSense-Kiro/`
-- **Cost:** FREE forever
-- **Reliability:** 99.9% uptime
-- **Professional:** Clean, memorable URL
+### **Best Option: Interactive Demo Server**
+- **Start:** `python judge_demo_server.py` or double-click `START_DEMO.bat`
+- **URL:** `http://localhost:8080`
+- **Experience:** Fully interactive with real AI agent responses
+- **Setup Time:** 30 seconds
 
 ### **What Judges Will See:**
 1. **Interactive Demo Tab:** Live AI agent simulation

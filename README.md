@@ -11,6 +11,16 @@ ProcureSense revolutionizes procurement processes through specialized AI agents 
 
 ## 🌟 **Live Demo**
 
+### 🚀 **Interactive Demo for Judges**
+**One-Click Start:** Double-click `START_DEMO.bat` (Windows) or `bash START_DEMO.sh` (Mac/Linux)
+**Demo URL:** `http://localhost:8080`
+
+✅ **Fully Interactive** - Submit real procurement requests  
+✅ **All 4 AI Agents** - See negotiation, compliance, forecast, and GP critic in action  
+✅ **Zero Dependencies** - Pure Python, no setup required  
+✅ **Professional UI** - Production-quality interface  
+
+### 🌐 **Alternative Access**
 🚀 **[Try ProcureSense Live](https://c5717ff4feb5.ngrok-free.app/)** (Global deployment via ngrok)
 
 - 🏠 **Main Application**: Interactive AI agent interface
@@ -82,6 +92,13 @@ python simple_server.py
 - 🏠 **Main App**: http://localhost:8001/
 - 📚 **API Docs**: http://localhost:8001/docs  
 - 📊 **Business Case**: http://localhost:8001/static/business-case.html
+
+### **🎯 For Judges - Interactive Demo**
+```bash
+# One-click demo start
+python judge_demo_server.py
+# Then visit: http://localhost:8080
+```
 
 ## 🏗️ **Architecture Overview**
 
