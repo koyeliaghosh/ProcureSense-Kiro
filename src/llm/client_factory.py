@@ -46,7 +46,8 @@ class LLMClientFactory:
         # Use mock client for cloud deployment if Ollama host is not accessible
         if provider == LLMProvider.OLLAMA:
             # Check if we're in a cloud environment (no local Ollama)
-            if settings.ollama_host == "localhost:11434" and not settings.openai_api_key:
+            if (settings.ollama_host == "localhost:11434" and 
+                not getattr(settings, 'openai_api_key', None)):
                 logger.info("Using mock LLM client for cloud deployment demo")
                 return MockLLMClient(config)
             return OllamaClient(config)

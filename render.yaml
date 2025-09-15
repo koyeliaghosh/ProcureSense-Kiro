@@ -3,7 +3,7 @@ services:
     name: procuresense-kiro
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python simple_server.py
+    startCommand: gunicorn app:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     envVars:
       - key: LLM_PROVIDER
         value: ollama
@@ -11,7 +11,3 @@ services:
         value: localhost:11434
       - key: OLLAMA_MODEL
         value: llama3.1:8b
-      - key: SERVER_HOST
-        value: 0.0.0.0
-      - key: SERVER_PORT
-        value: 10000
